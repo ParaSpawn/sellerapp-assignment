@@ -77,7 +77,10 @@ func getProductInfo(w http.ResponseWriter, r *http.Request) {
 		info.LastUpdated = time.Now()
 		payload, _ := json.Marshal(info)
 		res, err := http.Post("http://localhost:8010/writeProductInfo", "application/json", bytes.NewReader(payload))
-		if res.StatusCode == http.StatusInternalServerError || err != nil {
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong while writing the document: " + err.Error()))
+		} else if res.StatusCode == http.StatusInternalServerError {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something went wrong while writing the document"))
 		} else {
@@ -86,8 +89,13 @@ func getProductInfo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func homePage(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("made it"))
+}
+
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/getProductInfo", getProductInfo).Methods("POST")
+	router.HandleFunc("/", homePage).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
