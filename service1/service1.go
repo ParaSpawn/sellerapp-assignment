@@ -89,13 +89,8 @@ func getProductInfo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("made it"))
-}
-
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/getProductInfo", getProductInfo).Methods("POST")
-	router.HandleFunc("/", homePage).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
