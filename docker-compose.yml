@@ -3,8 +3,8 @@ services:
     service1:
         build: ./service1
         ports:
-         - "8000:8000"
+            - "8000:8000"
     service2:
         build: ./service2
         ports:
-         - "8010:8010"
+            - "8010:8010"

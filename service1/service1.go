@@ -76,7 +76,7 @@ func getProductInfo(w http.ResponseWriter, r *http.Request) {
 		info.URL = URL["url"]
 		info.LastUpdated = time.Now()
 		payload, _ := json.Marshal(info)
-		res, err := http.Post("http://localhost:8010/writeProductInfo", "application/json", bytes.NewReader(payload))
+		res, err := http.Post("http://service2:8010/writeProductInfo", "application/json", bytes.NewReader(payload))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something went wrong while writing the document: " + err.Error()))
