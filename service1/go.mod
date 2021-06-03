@@ -1,4 +1,4 @@
-module service1
+module github.com/ParaSpawn/sellerapp-assignment/service1
 
 go 1.16
 
