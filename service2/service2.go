@@ -4,7 +4,6 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -13,6 +12,7 @@ import (
 	scribble "github.com/nanobox-io/golang-scribble"
 )
 
+// Using a simple document store that stores the JSONs as files
 var db *scribble.Driver
 
 type ProductInfo struct {
@@ -25,6 +25,7 @@ type ProductInfo struct {
 	LastUpdated time.Time
 }
 
+// Hash function for titles. The hashed value will be used as id
 func getHash(val []byte) string {
 	hasher := sha1.New()
 	hasher.Write(val)
@@ -34,24 +35,29 @@ func getHash(val []byte) string {
 
 func writeProduct(w http.ResponseWriter, r *http.Request) {
 	var product ProductInfo
+	// Decoding information
 	json.NewDecoder(r.Body).Decode(&product)
+	// Attempting to store information
 	if err := db.Write("Product", getHash([]byte(product.Product.Title)), product); err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
+		// OK response on successful storage
 		w.WriteHeader(http.StatusOK)
 	}
 }
 
 func getAllProducts(w http.ResponseWriter, r *http.Request) {
+	// Retrieving all product information
 	products, err := db.ReadAll("Product")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
+		// Preparing payload
 		payload := make([]ProductInfo, len(products))
 		for i, s := range products {
 			json.Unmarshal([]byte(s), &payload[i])
 		}
+		// Encoding in responsewriter
 		json.NewEncoder(w).Encode(payload)
 	}
 }
